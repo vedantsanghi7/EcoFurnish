@@ -50,6 +50,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('Auth state changed:', event, session?.user?.email);
       if (session?.user) {
         await loadUserProfile(session.user).catch(console.error);
       } else {
@@ -63,46 +64,51 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const loadUserProfile = async (supabaseUser: SupabaseUser) => {
     try {
       // Try to get profile from profiles table
-      const { data: profile } = await supabase
+      const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', supabaseUser.id)
         .single();
 
-      if (profile) {
-        setUser({
+      if (profile && !profileError) {
+        const userData = {
           id: supabaseUser.id,
           email: supabaseUser.email || '',
           name: profile.name || supabaseUser.user_metadata?.full_name || supabaseUser.email?.split('@')[0] || 'User',
           avatar_url: profile.avatar_url || supabaseUser.user_metadata?.avatar_url,
-        });
+        };
+        console.log('Setting user from profile:', userData);
+        setUser(userData);
       } else {
         // Create profile if it doesn't exist
+        const name = supabaseUser.user_metadata?.full_name || supabaseUser.email?.split('@')[0] || 'User';
         const { error } = await supabase.from('profiles').insert({
           id: supabaseUser.id,
           email: supabaseUser.email,
-          name: supabaseUser.user_metadata?.full_name || supabaseUser.email?.split('@')[0] || 'User',
+          name: name,
           avatar_url: supabaseUser.user_metadata?.avatar_url,
         });
 
-        if (!error) {
-          setUser({
-            id: supabaseUser.id,
-            email: supabaseUser.email || '',
-            name: supabaseUser.user_metadata?.full_name || supabaseUser.email?.split('@')[0] || 'User',
-            avatar_url: supabaseUser.user_metadata?.avatar_url,
-          });
-        }
+        const userData = {
+          id: supabaseUser.id,
+          email: supabaseUser.email || '',
+          name: name,
+          avatar_url: supabaseUser.user_metadata?.avatar_url,
+        };
+        console.log('Setting user (new profile):', userData);
+        setUser(userData);
       }
     } catch (error) {
       console.error('Error loading user profile:', error);
       // Fallback to basic user info
-      setUser({
+      const userData = {
         id: supabaseUser.id,
         email: supabaseUser.email || '',
         name: supabaseUser.user_metadata?.full_name || supabaseUser.email?.split('@')[0] || 'User',
         avatar_url: supabaseUser.user_metadata?.avatar_url,
-      });
+      };
+      console.log('Setting user (fallback):', userData);
+      setUser(userData);
     }
   };
 
@@ -119,8 +125,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
 
       if (data.user) {
+        // Immediately load user profile to update state
         await loadUserProfile(data.user);
         setIsAuthModalOpen(false);
+        // Force a re-render by checking session again
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user) {
+          await loadUserProfile(session.user);
+        }
         return true;
       }
       return false;
@@ -155,8 +167,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           name: name,
         });
 
+        // Immediately load user profile to update state
         await loadUserProfile(data.user);
         setIsAuthModalOpen(false);
+        // Force a re-render by checking session again
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user) {
+          await loadUserProfile(session.user);
+        }
         return true;
       }
       return false;

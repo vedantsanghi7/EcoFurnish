@@ -105,7 +105,7 @@ const Navbar = () => {
             </motion.button>
 
             {/* Auth Button */}
-            {isAuthenticated ? (
+            {isAuthenticated && user ? (
               <div className="hidden md:block relative" ref={userMenuRef}>
                 <motion.button
                   whileHover={{ scale: 1.05 }}
