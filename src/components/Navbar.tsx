@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShoppingCart, User, Menu, X } from 'lucide-react';
+import { ShoppingCart, User, Menu, X, LogOut, UserCircle } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
 import logoImg from '@/assets/logo.png';
@@ -8,6 +8,8 @@ import logoImg from '@/assets/logo.png';
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const userMenuRef = useRef<HTMLDivElement>(null);
   const { totalItems, setIsCartOpen } = useCart();
   const { isAuthenticated, setIsAuthModalOpen, setAuthMode, user, logout } = useAuth();
 
@@ -17,6 +19,17 @@ const Navbar = () => {
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Close user menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
+        setIsUserMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   const navLinks = [
@@ -93,16 +106,51 @@ const Navbar = () => {
 
             {/* Auth Button */}
             {isAuthenticated ? (
-              <div className="hidden md:flex items-center gap-3">
-                <span className="text-sm text-foreground/70">Hi, {user?.name}</span>
+              <div className="hidden md:block relative" ref={userMenuRef}>
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  onClick={logout}
-                  className="px-4 py-2 rounded-full text-sm font-medium text-foreground/70 hover:text-foreground transition-colors"
+                  onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                  className="p-2 rounded-full bg-primary/10 hover:bg-primary/20 transition-colors relative"
                 >
-                  Logout
+                  {user?.avatar_url ? (
+                    <img
+                      src={user.avatar_url}
+                      alt={user.name}
+                      className="w-6 h-6 rounded-full object-cover"
+                    />
+                  ) : (
+                    <UserCircle className="w-6 h-6 text-primary" />
+                  )}
                 </motion.button>
+                
+                {/* User Dropdown Menu */}
+                <AnimatePresence>
+                  {isUserMenuOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                      className="absolute right-0 mt-2 w-48 bg-background border border-border rounded-lg shadow-lg overflow-hidden z-50"
+                    >
+                      <div className="p-3 border-b border-border">
+                        <p className="font-semibold text-foreground text-sm">{user?.name}</p>
+                        <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
+                      </div>
+                      <motion.button
+                        whileHover={{ backgroundColor: 'rgba(var(--primary), 0.1)' }}
+                        onClick={() => {
+                          logout();
+                          setIsUserMenuOpen(false);
+                        }}
+                        className="w-full flex items-center gap-2 px-3 py-2 text-sm text-foreground/70 hover:text-foreground transition-colors"
+                      >
+                        <LogOut className="w-4 h-4" />
+                        Logout
+                      </motion.button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             ) : (
               <motion.button
@@ -156,7 +204,25 @@ const Navbar = () => {
                   {link.name}
                 </motion.a>
               ))}
-              {!isAuthenticated && (
+              {isAuthenticated ? (
+                <div className="space-y-2 pt-2 border-t border-border">
+                  <div className="px-4 py-2">
+                    <p className="font-semibold text-foreground text-sm">{user?.name}</p>
+                    <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
+                  </div>
+                  <motion.button
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => {
+                      logout();
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-full bg-primary/10 text-foreground font-medium"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    Logout
+                  </motion.button>
+                </div>
+              ) : (
                 <motion.button
                   whileTap={{ scale: 0.95 }}
                   onClick={() => {
