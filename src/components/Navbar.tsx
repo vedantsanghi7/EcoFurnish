@@ -204,7 +204,7 @@ const Navbar = () => {
                   {link.name}
                 </motion.a>
               ))}
-              {isAuthenticated ? (
+              {isAuthenticated && user ? (
                 <div className="space-y-2 pt-2 border-t border-border">
                   <div className="px-4 py-2">
                     <p className="font-semibold text-foreground text-sm">{user?.name}</p>

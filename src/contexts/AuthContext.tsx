@@ -82,12 +82,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       } else {
         // Create profile if it doesn't exist
         const name = supabaseUser.user_metadata?.full_name || supabaseUser.email?.split('@')[0] || 'User';
-        const { error } = await supabase.from('profiles').insert({
+        const { data: insertedProfile, error } = await supabase.from('profiles').insert({
           id: supabaseUser.id,
           email: supabaseUser.email,
           name: name,
           avatar_url: supabaseUser.user_metadata?.avatar_url,
-        });
+        }).select().single();
+
+        if (error) {
+          console.error('Error creating profile:', error);
+          // Still set user even if profile creation fails
+        }
 
         const userData = {
           id: supabaseUser.id,
@@ -95,7 +100,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           name: name,
           avatar_url: supabaseUser.user_metadata?.avatar_url,
         };
-        console.log('Setting user (new profile):', userData);
+        console.log('Setting user (new profile):', userData, 'Insert error:', error);
         setUser(userData);
       }
     } catch (error) {
