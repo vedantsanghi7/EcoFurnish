@@ -1,14 +1,23 @@
 import { motion } from 'framer-motion';
 import { Mail, Phone, MapPin, Facebook, Twitter, Instagram, Linkedin, ArrowUp } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
 import logoImg from '@/assets/logo.png';
 
 const Footer = () => {
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
+  const { isAuthenticated, user } = useAuth();
+
+  // Pre-fill email if user is logged in
+  useEffect(() => {
+    if (isAuthenticated && user?.email) {
+      setEmail(user.email);
+    }
+  }, [isAuthenticated, user?.email]);
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -43,31 +52,40 @@ const Footer = () => {
       }
 
       // Save to Supabase database
-      const { error } = await supabase
+      const emailToSave = email.toLowerCase().trim();
+      const { data, error } = await supabase
         .from('newsletter_subscribers')
         .insert([
           {
-            email: email.toLowerCase().trim(),
+            email: emailToSave,
             subscribed_at: new Date().toISOString(),
+            is_active: true,
           },
-        ]);
+        ])
+        .select();
 
       if (error) {
-        // Check if it's a duplicate email error
-        if (error.code === '23505') {
+        // Check if it's a duplicate email error (unique constraint violation)
+        if (error.code === '23505' || error.message.includes('duplicate') || error.message.includes('unique')) {
           toast({
             title: 'Already subscribed!',
             description: 'This email is already subscribed to our newsletter.',
           });
+          setEmail('');
         } else {
+          console.error('Newsletter subscription error:', error);
           throw error;
         }
       } else {
+        console.log('Newsletter subscription successful:', data);
         toast({
           title: 'Successfully subscribed!',
           description: 'Thank you for joining our green movement!',
         });
-        setEmail('');
+        // Don't clear email if user is logged in (keep it pre-filled)
+        if (!isAuthenticated) {
+          setEmail('');
+        }
       }
     } catch (error) {
       console.error('Newsletter subscription error:', error);
@@ -227,17 +245,19 @@ const Footer = () => {
               Join Our Green Movement
             </h4>
             <p className="text-primary-foreground/70 mb-4">
-              Subscribe for updates on new products and sustainability tips.
+              {isAuthenticated 
+                ? `Welcome, ${user?.name || 'friend'}! Subscribe for updates on new products and sustainability tips.`
+                : 'Subscribe for updates on new products and sustainability tips.'}
             </p>
             <form onSubmit={handleNewsletterSubmit} className="flex gap-3">
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email"
+                placeholder={isAuthenticated ? user?.email || "Enter your email" : "Enter your email"}
                 required
-                disabled={isSubmitting}
-                className="flex-1 px-4 py-3 rounded-full bg-primary-foreground/10 border border-primary-foreground/20 focus:border-lime focus:ring-2 focus:ring-lime/20 outline-none text-primary-foreground placeholder:text-primary-foreground/50 disabled:opacity-50"
+                disabled={isSubmitting || (isAuthenticated && !!user?.email)}
+                className="flex-1 px-4 py-3 rounded-full bg-primary-foreground/10 border border-primary-foreground/20 focus:border-lime focus:ring-2 focus:ring-lime/20 outline-none text-primary-foreground placeholder:text-primary-foreground/50 disabled:opacity-50 disabled:cursor-not-allowed"
               />
               <motion.button
                 whileHover={{ scale: isSubmitting ? 1 : 1.05 }}
