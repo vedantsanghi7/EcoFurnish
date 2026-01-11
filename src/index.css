@@ -1,0 +1,318 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* EcoFurnish Design System - Ocean & Nature Inspired */
+    --background: 150 30% 98%;
+    --foreground: 170 40% 12%;
+
+    --card: 150 25% 97%;
+    --card-foreground: 170 40% 12%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 170 40% 12%;
+
+    /* Teal Ocean Primary */
+    --primary: 168 76% 42%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Lime Green Secondary */
+    --secondary: 78 60% 55%;
+    --secondary-foreground: 170 40% 12%;
+
+    /* Sandy Beige Muted */
+    --muted: 45 30% 90%;
+    --muted-foreground: 170 25% 40%;
+
+    /* Coral Accent */
+    --accent: 16 85% 65%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 168 30% 85%;
+    --input: 168 30% 85%;
+    --ring: 168 76% 42%;
+
+    --radius: 1rem;
+
+    /* Custom EcoFurnish Colors */
+    --ocean: 168 76% 42%;
+    --ocean-light: 168 60% 85%;
+    --ocean-dark: 170 70% 25%;
+    --lime: 78 60% 55%;
+    --lime-light: 78 50% 85%;
+    --sand: 45 40% 92%;
+    --sand-dark: 45 30% 75%;
+    --coral: 16 85% 65%;
+    --coral-light: 16 70% 85%;
+    --sky: 80 70% 75%;
+
+    /* Gradients */
+    --gradient-ocean: linear-gradient(135deg, hsl(168, 76%, 42%) 0%, hsl(170, 70%, 25%) 100%);
+    --gradient-sky: linear-gradient(180deg, hsl(80, 70%, 75%) 0%, hsl(168, 60%, 85%) 50%, hsl(168, 76%, 42%) 100%);
+    --gradient-sand: linear-gradient(135deg, hsl(45, 40%, 92%) 0%, hsl(45, 30%, 75%) 100%);
+    --gradient-coral: linear-gradient(135deg, hsl(16, 85%, 65%) 0%, hsl(16, 70%, 55%) 100%);
+    --gradient-hero: linear-gradient(180deg, hsl(80, 70%, 80%) 0%, hsl(168, 60%, 75%) 40%, hsl(168, 76%, 55%) 100%);
+
+    /* Shadows */
+    --shadow-soft: 0 4px 20px -4px hsl(168 76% 42% / 0.15);
+    --shadow-glow: 0 0 40px -10px hsl(168 76% 42% / 0.3);
+    --shadow-card: 0 8px 30px -10px hsl(170 40% 12% / 0.1);
+
+    --sidebar-background: 150 30% 98%;
+    --sidebar-foreground: 170 40% 12%;
+    --sidebar-primary: 168 76% 42%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 78 60% 55%;
+    --sidebar-accent-foreground: 170 40% 12%;
+    --sidebar-border: 168 30% 85%;
+    --sidebar-ring: 168 76% 42%;
+  }
+
+  .dark {
+    --background: 170 40% 8%;
+    --foreground: 150 30% 95%;
+
+    --card: 170 35% 12%;
+    --card-foreground: 150 30% 95%;
+
+    --popover: 170 35% 12%;
+    --popover-foreground: 150 30% 95%;
+
+    --primary: 168 70% 50%;
+    --primary-foreground: 170 40% 8%;
+
+    --secondary: 78 55% 45%;
+    --secondary-foreground: 150 30% 95%;
+
+    --muted: 170 30% 18%;
+    --muted-foreground: 150 20% 65%;
+
+    --accent: 16 75% 55%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 70% 45%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 170 30% 20%;
+    --input: 170 30% 20%;
+    --ring: 168 70% 50%;
+
+    --ocean: 168 70% 50%;
+    --ocean-light: 168 50% 30%;
+    --ocean-dark: 170 60% 15%;
+    --lime: 78 55% 45%;
+    --lime-light: 78 40% 25%;
+    --sand: 45 20% 20%;
+    --sand-dark: 45 15% 15%;
+    --coral: 16 75% 55%;
+    --coral-light: 16 60% 35%;
+    --sky: 80 50% 25%;
+
+    --gradient-ocean: linear-gradient(135deg, hsl(168, 70%, 50%) 0%, hsl(170, 60%, 15%) 100%);
+    --gradient-sky: linear-gradient(180deg, hsl(80, 50%, 25%) 0%, hsl(168, 50%, 30%) 50%, hsl(170, 60%, 15%) 100%);
+    --gradient-hero: linear-gradient(180deg, hsl(80, 50%, 20%) 0%, hsl(168, 50%, 25%) 40%, hsl(170, 60%, 20%) 100%);
+
+    --sidebar-background: 170 40% 8%;
+    --sidebar-foreground: 150 30% 95%;
+    --sidebar-primary: 168 70% 50%;
+    --sidebar-primary-foreground: 170 40% 8%;
+    --sidebar-accent: 78 55% 45%;
+    --sidebar-accent-foreground: 150 30% 95%;
+    --sidebar-border: 170 30% 20%;
+    --sidebar-ring: 168 70% 50%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Inter', sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Playfair Display', serif;
+  }
+}
+
+@layer components {
+  .eco-gradient-text {
+    @apply bg-clip-text text-transparent;
+    background-image: var(--gradient-ocean);
+  }
+
+  .eco-card {
+    @apply bg-card rounded-2xl p-6 transition-all duration-300;
+    box-shadow: var(--shadow-card);
+  }
+
+  .eco-card:hover {
+    @apply -translate-y-1;
+    box-shadow: var(--shadow-glow);
+  }
+
+  .eco-button-primary {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full font-medium transition-all duration-300;
+    background: var(--gradient-ocean);
+    color: hsl(var(--primary-foreground));
+    box-shadow: var(--shadow-soft);
+  }
+
+  .eco-button-primary:hover {
+    @apply scale-105;
+    box-shadow: var(--shadow-glow);
+  }
+
+  .eco-button-secondary {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full font-medium transition-all duration-300 bg-secondary text-secondary-foreground;
+  }
+
+  .eco-button-secondary:hover {
+    @apply scale-105 bg-lime;
+  }
+
+  .eco-section {
+    @apply py-20 md:py-32;
+  }
+
+  .wave-divider {
+    @apply absolute left-0 right-0 w-full overflow-hidden leading-none;
+  }
+
+  .floating {
+    animation: floating 6s ease-in-out infinite;
+  }
+
+  .floating-delay-1 {
+    animation: floating 6s ease-in-out 1s infinite;
+  }
+
+  .floating-delay-2 {
+    animation: floating 6s ease-in-out 2s infinite;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Custom Animations */
+@keyframes floating {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-10px) rotate(1deg);
+  }
+  50% {
+    transform: translateY(-5px) rotate(0deg);
+  }
+  75% {
+    transform: translateY(-15px) rotate(-1deg);
+  }
+}
+
+@keyframes wave {
+  0% {
+    transform: translateX(0) translateZ(0) scaleY(1);
+  }
+  50% {
+    transform: translateX(-25%) translateZ(0) scaleY(0.8);
+  }
+  100% {
+    transform: translateX(-50%) translateZ(0) scaleY(1);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px hsl(168 76% 42% / 0.3);
+  }
+  50% {
+    box-shadow: 0 0 40px hsl(168 76% 42% / 0.5);
+  }
+}
+
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes bounce-subtle {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+/* Wave Background Animation */
+.wave-bg {
+  background: linear-gradient(180deg, 
+    hsl(80 70% 80%) 0%, 
+    hsl(168 60% 75%) 30%, 
+    hsl(168 76% 55%) 70%,
+    hsl(168 76% 42%) 100%
+  );
+  position: relative;
+  overflow: hidden;
+}
+
+.wave-bg::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 200%;
+  height: 100px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cpath d='M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z' fill='%23ffffff20'/%3E%3C/svg%3E") repeat-x;
+  animation: wave 15s linear infinite;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(var(--muted));
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--primary));
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--ocean-dark));
+}
